@@ -42,7 +42,7 @@ jobs:
         key-id: ${{ secrets.OSS_KEY_ID }}
         key-secret: ${{ secrets.OSS_KEY_SECRET }}
         region: oss-cn-hangzhou
-        bucket: tvrcgo
+        bucket: vial-download
         assets: |
           out/Vial-x86_64.AppImage:/vial-mac.dmg
 
@@ -74,7 +74,7 @@ jobs:
         key-id: ${{ secrets.OSS_KEY_ID }}
         key-secret: ${{ secrets.OSS_KEY_SECRET }}
         region: oss-cn-hangzhou
-        bucket: tvrcgo
+        bucket: vial-download
         assets: |
           vial-mac.dmg:/vial-mac.dmg
 
@@ -118,7 +118,7 @@ jobs:
         key-id: ${{ secrets.OSS_KEY_ID }}
         key-secret: ${{ secrets.OSS_KEY_SECRET }}
         region: oss-cn-hangzhou
-        bucket: tvrcgo
+        bucket: vial-download
         assets: |
           target\VialSetup.exe:/VialSetup.exe
           vial-win.zip:/vial-win.zip
