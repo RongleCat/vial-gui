@@ -76,7 +76,7 @@ jobs:
           region: oss-cn-hangzhou
           bucket: vial-download
           assets: |
-            out/Vial-x86_64.AppImage:/vial-mac.dmg
+            out/Vial-x86_64.AppImage:/Vial-x86_64.AppImage
 
   build-win:
     runs-on: windows-2019
