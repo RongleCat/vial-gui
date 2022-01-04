@@ -35,10 +35,16 @@ jobs:
         ./pkg2appimage-*/pkg2appimage misc/Vial.yml
         mv out/Vial-*.AppImage out/Vial-x86_64.AppImage
 
-    - uses: actions/upload-artifact@v1
+    - name: Upload to oss
+      id: upload_to_oss
+      uses: tvrcgo/upload-to-oss@master
       with:
-        name: vial-linux
-        path: out/Vial-x86_64.AppImage
+        key-id: ${{ secrets.OSS_KEY_ID }}
+        key-secret: ${{ secrets.OSS_KEY_SECRET }}
+        region: oss-cn-hangzhou
+        bucket: tvrcgo
+        assets: |
+          out/Vial-x86_64.AppImage:/vial-mac.dmg
 
   build-mac:
     runs-on: macos-10.15
@@ -61,10 +67,16 @@ jobs:
         fbs freeze
         hdiutil create -volname Vial -srcfolder "target/Vial.app" -ov -format UDZO vial-mac.dmg
 
-    - uses: actions/upload-artifact@v1
+    - name: Upload to oss
+      id: upload_to_oss
+      uses: tvrcgo/upload-to-oss@master
       with:
-        name: vial-mac
-        path: vial-mac.dmg
+        key-id: ${{ secrets.OSS_KEY_ID }}
+        key-secret: ${{ secrets.OSS_KEY_SECRET }}
+        region: oss-cn-hangzhou
+        bucket: tvrcgo
+        assets: |
+          vial-mac.dmg:/vial-mac.dmg
 
   build-win:
     runs-on: windows-2019
@@ -93,18 +105,20 @@ jobs:
         fbs freeze
         Compress-Archive -Path "target\Vial" -DestinationPath vial-win.zip
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: vial-win
-        path: vial-win.zip
-
     - name: Create installer
       run: |
         $env:Path += ";C:\Program Files (x86)\NSIS"
         . .\venv\Scripts\activate.ps1
         fbs installer
 
-    - uses: actions/upload-artifact@v1
+    - name: Upload to oss
+      id: upload_to_oss
+      uses: tvrcgo/upload-to-oss@master
       with:
-        name: vial-win-installer
-        path: target\VialSetup.exe
+        key-id: ${{ secrets.OSS_KEY_ID }}
+        key-secret: ${{ secrets.OSS_KEY_SECRET }}
+        region: oss-cn-hangzhou
+        bucket: tvrcgo
+        assets: |
+          target\VialSetup.exe:/VialSetup.exe
+          vial-win.zip:/vial-win.zip
