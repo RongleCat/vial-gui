@@ -68,35 +68,35 @@ class VialRGBEffect:
 
 
 VIALRGB_EFFECTS = [
-    VialRGBEffect(0, "Disable"),
-    VialRGBEffect(1, "Direct Control"),
-    VialRGBEffect(2, "Solid Color"),
-    VialRGBEffect(3, "Alphas Mods"),
-    VialRGBEffect(4, "Gradient Up Down"),
-    VialRGBEffect(5, "Gradient Left Right"),
-    VialRGBEffect(6, "Breathing"),
+    VialRGBEffect(0, "禁用"),
+    VialRGBEffect(1, "直接控制"),
+    VialRGBEffect(2, "纯色"),
+    VialRGBEffect(3, "阿尔法插件"),
+    VialRGBEffect(4, "梯度上升下降"),
+    VialRGBEffect(5, "梯度左右"),
+    VialRGBEffect(6, "呼吸"),
     VialRGBEffect(7, "Band Sat"),
     VialRGBEffect(8, "Band Val"),
     VialRGBEffect(9, "Band Pinwheel Sat"),
     VialRGBEffect(10, "Band Pinwheel Val"),
     VialRGBEffect(11, "Band Spiral Sat"),
     VialRGBEffect(12, "Band Spiral Val"),
-    VialRGBEffect(13, "Cycle All"),
-    VialRGBEffect(14, "Cycle Left Right"),
-    VialRGBEffect(15, "Cycle Up Down"),
-    VialRGBEffect(16, "Rainbow Moving Chevron"),
-    VialRGBEffect(17, "Cycle Out In"),
-    VialRGBEffect(18, "Cycle Out In Dual"),
-    VialRGBEffect(19, "Cycle Pinwheel"),
-    VialRGBEffect(20, "Cycle Spiral"),
-    VialRGBEffect(21, "Dual Beacon"),
-    VialRGBEffect(22, "Rainbow Beacon"),
-    VialRGBEffect(23, "Rainbow Pinwheels"),
-    VialRGBEffect(24, "Raindrops"),
-    VialRGBEffect(25, "Jellybean Raindrops"),
-    VialRGBEffect(26, "Hue Breathing"),
-    VialRGBEffect(27, "Hue Pendulum"),
-    VialRGBEffect(28, "Hue Wave"),
+    VialRGBEffect(13, "循环"),
+    VialRGBEffect(14, "循环 左-右"),
+    VialRGBEffect(15, "循环 上-下"),
+    VialRGBEffect(16, "彩虹移动雪佛龙"),
+    VialRGBEffect(17, "循环 Out-In"),
+    VialRGBEffect(18, "循环 Out In Dual"),
+    VialRGBEffect(19, "循环纸风车"),
+    VialRGBEffect(20, "周期循环"),
+    VialRGBEffect(21, "双频灯塔"),
+    VialRGBEffect(22, "彩虹灯塔"),
+    VialRGBEffect(23, "彩虹纸风车"),
+    VialRGBEffect(24, "雨滴"),
+    VialRGBEffect(25, "果冻豆雨滴"),
+    VialRGBEffect(26, "色调呼吸"),
+    VialRGBEffect(27, "色调摇摆"),
+    VialRGBEffect(28, "色调波浪"),
     VialRGBEffect(29, "Typing Heatmap"),
     VialRGBEffect(30, "Digital Rain"),
     VialRGBEffect(31, "Solid Reactive Simple"),
@@ -273,7 +273,7 @@ class VialRGBHandler(BasicHandler):
 
         row = container.rowCount()
 
-        self.lbl_rgb_effect = QLabel(tr("RGBConfigurator", "RGB Effect"))
+        self.lbl_rgb_effect = QLabel(tr("RGBConfigurator", "RGB 灯效"))
         container.addWidget(self.lbl_rgb_effect, row, 0)
         self.rgb_effect = QComboBox()
         self.rgb_effect.addItem("0")
@@ -283,13 +283,13 @@ class VialRGBHandler(BasicHandler):
         self.rgb_effect.currentIndexChanged.connect(self.on_rgb_effect_changed)
         container.addWidget(self.rgb_effect, row, 1)
 
-        self.lbl_rgb_color = QLabel(tr("RGBConfigurator", "RGB Color"))
+        self.lbl_rgb_color = QLabel(tr("RGBConfigurator", "RGB 颜色"))
         container.addWidget(self.lbl_rgb_color, row + 1, 0)
         self.rgb_color = ClickableLabel(" ")
         self.rgb_color.clicked.connect(self.on_rgb_color)
         container.addWidget(self.rgb_color, row + 1, 1)
 
-        self.lbl_rgb_brightness = QLabel(tr("RGBConfigurator", "RGB Brightness"))
+        self.lbl_rgb_brightness = QLabel(tr("RGBConfigurator", "RGB 亮度"))
         container.addWidget(self.lbl_rgb_brightness, row + 2, 0)
         self.rgb_brightness = QSlider(QtCore.Qt.Horizontal)
         self.rgb_brightness.setMinimum(0)
@@ -297,7 +297,7 @@ class VialRGBHandler(BasicHandler):
         self.rgb_brightness.valueChanged.connect(self.on_rgb_brightness_changed)
         container.addWidget(self.rgb_brightness, row + 2, 1)
 
-        self.lbl_rgb_speed = QLabel(tr("RGBConfigurator", "RGB Speed"))
+        self.lbl_rgb_speed = QLabel(tr("RGBConfigurator", "RGB 速度"))
         container.addWidget(self.lbl_rgb_speed, row + 3, 0)
         self.rgb_speed = QSlider(QtCore.Qt.Horizontal)
         self.rgb_speed.setMinimum(0)

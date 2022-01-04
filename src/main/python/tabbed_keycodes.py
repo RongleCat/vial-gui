@@ -89,15 +89,15 @@ class TabbedKeycodes(QTabWidget):
         any_btn.clicked.connect(lambda: self.anykey.emit())
 
         self.tabs = [
-            Tab("Basic", KEYCODES_SPECIAL + KEYCODES_BASIC + KEYCODES_SHIFTED, prefix_buttons=[any_btn]),
+            Tab("基本", KEYCODES_SPECIAL + KEYCODES_BASIC + KEYCODES_SHIFTED, prefix_buttons=[any_btn]),
             Tab("ISO/JIS", KEYCODES_ISO),
-            Tab("Layers", KEYCODES_LAYERS),
-            Tab("Quantum", KEYCODES_QUANTUM),
-            Tab("Backlight", KEYCODES_BACKLIGHT),
-            Tab("App, Media and Mouse", KEYCODES_MEDIA),
-            Tab("Tap Dance", KEYCODES_TAP_DANCE),
-            Tab("User", KEYCODES_USER),
-            Tab("Macro", KEYCODES_MACRO),
+            Tab("层", KEYCODES_LAYERS),
+            Tab("组合键", KEYCODES_QUANTUM),
+            Tab("背光", KEYCODES_BACKLIGHT),
+            Tab("应用、媒体、鼠标", KEYCODES_MEDIA),
+            Tab("按键操作", KEYCODES_TAP_DANCE),
+            Tab("用户", KEYCODES_USER),
+            Tab("宏", KEYCODES_MACRO),
         ]
 
         for tab in self.tabs:

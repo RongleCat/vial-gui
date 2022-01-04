@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
 
         self.btn_refresh_devices = QToolButton()
         self.btn_refresh_devices.setToolButtonStyle(Qt.ToolButtonTextOnly)
-        self.btn_refresh_devices.setText(tr("MainWindow", "Refresh"))
+        self.btn_refresh_devices.setText(tr("MainWindow", "刷新"))
         self.btn_refresh_devices.clicked.connect(self.on_click_refresh)
 
         layout_combobox = QHBoxLayout()
@@ -68,10 +68,10 @@ class MainWindow(QMainWindow):
         self.matrix_tester = MatrixTest(self.layout_editor)
         self.rgb_configurator = RGBConfigurator()
 
-        self.editors = [(self.keymap_editor, "Keymap"), (self.layout_editor, "Layout"), (self.macro_recorder, "Macros"),
-                        (self.rgb_configurator, "Lighting"), (self.tap_dance, "Tap Dance"), (self.combos, "Combos"),
-                        (self.qmk_settings, "QMK Settings"),
-                        (self.matrix_tester, "Matrix tester"), (self.firmware_flasher, "Firmware updater")]
+        self.editors = [(self.keymap_editor, "按键映射"), (self.layout_editor, "布局"), (self.macro_recorder, "宏"),
+                        (self.rgb_configurator, "背光"), (self.tap_dance, "按键操作"), (self.combos, "组合"),
+                        (self.qmk_settings, "QMK 设置"),
+                        (self.matrix_tester, "按键测试"), (self.firmware_flasher, "固件更新")]
 
         Unlocker.global_layout_editor = self.layout_editor
 
@@ -119,28 +119,28 @@ class MainWindow(QMainWindow):
         self.on_click_refresh()
 
     def init_menu(self):
-        layout_load_act = QAction(tr("MenuFile", "Load saved layout..."), self)
+        layout_load_act = QAction(tr("MenuFile", "加载保存布局..."), self)
         layout_load_act.setShortcut("Ctrl+O")
         layout_load_act.triggered.connect(self.on_layout_load)
 
-        layout_save_act = QAction(tr("MenuFile", "Save current layout..."), self)
+        layout_save_act = QAction(tr("MenuFile", "保存当前的布局..."), self)
         layout_save_act.setShortcut("Ctrl+S")
         layout_save_act.triggered.connect(self.on_layout_save)
 
-        sideload_json_act = QAction(tr("MenuFile", "Sideload VIA JSON..."), self)
+        sideload_json_act = QAction(tr("MenuFile", "加载 VIA JSON..."), self)
         sideload_json_act.triggered.connect(self.on_sideload_json)
 
-        download_via_stack_act = QAction(tr("MenuFile", "Download VIA definitions"), self)
+        download_via_stack_act = QAction(tr("MenuFile", "下载 VIA 定义"), self)
         download_via_stack_act.triggered.connect(self.load_via_stack_json)
 
-        load_dummy_act = QAction(tr("MenuFile", "Load dummy JSON..."), self)
+        load_dummy_act = QAction(tr("MenuFile", "加载模拟 JSON..."), self)
         load_dummy_act.triggered.connect(self.on_load_dummy)
 
         exit_act = QAction(tr("MenuFile", "Exit"), self)
         exit_act.setShortcut("Ctrl+Q")
         exit_act.triggered.connect(qApp.exit)
 
-        file_menu = self.menuBar().addMenu(tr("Menu", "File"))
+        file_menu = self.menuBar().addMenu(tr("Menu", "文件"))
         file_menu.addAction(layout_load_act)
         file_menu.addAction(layout_save_act)
         file_menu.addSeparator()
@@ -150,16 +150,16 @@ class MainWindow(QMainWindow):
         file_menu.addSeparator()
         file_menu.addAction(exit_act)
 
-        keyboard_unlock_act = QAction(tr("MenuSecurity", "Unlock"), self)
+        keyboard_unlock_act = QAction(tr("MenuSecurity", "取消锁定"), self)
         keyboard_unlock_act.triggered.connect(self.unlock_keyboard)
 
-        keyboard_lock_act = QAction(tr("MenuSecurity", "Lock"), self)
+        keyboard_lock_act = QAction(tr("MenuSecurity", "锁定"), self)
         keyboard_lock_act.triggered.connect(self.lock_keyboard)
 
-        keyboard_reset_act = QAction(tr("MenuSecurity", "Reboot to bootloader"), self)
+        keyboard_reset_act = QAction(tr("MenuSecurity", "重新引导"), self)
         keyboard_reset_act.triggered.connect(self.reboot_to_bootloader)
 
-        keyboard_layout_menu = self.menuBar().addMenu(tr("Menu", "Keyboard layout"))
+        keyboard_layout_menu = self.menuBar().addMenu(tr("Menu", "键盘布局"))
         keymap_group = QActionGroup(self)
         selected_keymap = self.settings.value("keymap")
         for idx, keymap in enumerate(KEYMAPS):
@@ -175,13 +175,13 @@ class MainWindow(QMainWindow):
         if keymap_group.checkedAction() is None:
             keymap_group.actions()[0].setChecked(True)
 
-        self.security_menu = self.menuBar().addMenu(tr("Menu", "Security"))
+        self.security_menu = self.menuBar().addMenu(tr("Menu", "安全"))
         self.security_menu.addAction(keyboard_unlock_act)
         self.security_menu.addAction(keyboard_lock_act)
         self.security_menu.addSeparator()
         self.security_menu.addAction(keyboard_reset_act)
 
-        self.theme_menu = self.menuBar().addMenu(tr("Menu", "Theme"))
+        self.theme_menu = self.menuBar().addMenu(tr("Menu", "主题"))
         theme_group = QActionGroup(self)
         selected_theme = self.get_theme()
         for name, _ in [("System", None)] + themes.themes:
@@ -195,9 +195,9 @@ class MainWindow(QMainWindow):
         if theme_group.checkedAction() is None:
             theme_group.actions()[0].setChecked(True)
 
-        about_vial_act = QAction(tr("MenuAbout", "About Vial..."), self)
+        about_vial_act = QAction(tr("MenuAbout", "关于 Vial..."), self)
         about_vial_act.triggered.connect(self.about_vial)
-        self.about_menu = self.menuBar().addMenu(tr("Menu", "About"))
+        self.about_menu = self.menuBar().addMenu(tr("Menu", "关于"))
         self.about_menu.addAction(about_vial_act)
 
     def on_layout_load(self):
@@ -352,7 +352,7 @@ class MainWindow(QMainWindow):
         themes.set_theme(theme)
         self.settings.setValue("theme", theme)
         msg = QMessageBox()
-        msg.setText(tr("MainWindow", "In order to fully apply the theme you should restart the application."))
+        msg.setText(tr("MainWindow", "为了完全应用主题，您应该重新启动应用程序。"))
         msg.exec_()
 
     def on_tab_changed(self, index):
@@ -375,6 +375,7 @@ class MainWindow(QMainWindow):
             "About Vial",
             'Vial {}<br><br>'
             'Licensed under the terms of the<br>GNU General Public License (version 2 or later)<br><br>'
+            '汉化： <a href="https://www.fmcat.top/">RongleCat</a><br>'
             '<a href="https://get.vial.today/">https://get.vial.today/</a>'
             .format(self.appctx.build_settings["version"])
         )
