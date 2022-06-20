@@ -78,15 +78,15 @@ jobs:
         mv out/Vial-*.AppImage out/Vial-x86_64.AppImage
 
     - name: Upload to oss
-        id: upload_to_oss
-        uses: tvrcgo/upload-to-oss@master
-        with:
-          key-id: ${{ secrets.OSS_KEY_ID }}
-          key-secret: ${{ secrets.OSS_KEY_SECRET }}
-          region: oss-cn-hangzhou
-          bucket: vial-download
-          assets: |
-            out/Vial-x86_64.AppImage:/Vial-x86_64.AppImage
+      id: upload_to_oss
+      uses: tvrcgo/upload-to-oss@master
+      with:
+        key-id: ${{ secrets.OSS_KEY_ID }}
+        key-secret: ${{ secrets.OSS_KEY_SECRET }}
+        region: oss-cn-hangzhou
+        bucket: vial-download
+        assets: |
+          out/Vial-x86_64.AppImage:/Vial-x86_64.AppImage
 
   build-win:
     runs-on: windows-2019

@@ -77,11 +77,6 @@ class MainWindow(QMainWindow):
 
         self.editors = [(self.keymap_editor, "按键映射"), (self.layout_editor, "布局"), (self.macro_recorder, "宏"),
                         (self.rgb_configurator, "背光"), (self.tap_dance, "按键操作"), (self.combos, "组合"),
-                        (self.qmk_settings, "QMK 设置"),
-                        (self.matrix_tester, "按键测试"), (self.firmware_flasher, "固件更新")]
-
-        self.editors = [(self.keymap_editor, "按键映射"), (self.layout_editor, "布局"), (self.macro_recorder, "宏"),
-                        (self.rgb_configurator, "背光"), (self.tap_dance, "按键操作"), (self.combos, "组合"),
                         (self.key_override, "按键覆盖"), (self.qmk_settings, "QMK 设置"),
                         (self.matrix_tester, "按键测试"), (self.firmware_flasher, "固件更新")]
 
