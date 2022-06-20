@@ -5,13 +5,14 @@ import hashlib
 import struct
 import time
 import threading
+import sys
 
 from PyQt5.QtCore import pyqtSignal, QCoreApplication
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import QHBoxLayout, QLineEdit, QToolButton, QPlainTextEdit, QProgressBar, QFileDialog, QDialog, \
     QCheckBox
 
-from basic_editor import BasicEditor
+from editor.basic_editor import BasicEditor
 from unlocker import Unlocker
 from util import tr, chunks, find_vial_devices, pad_for_vibl
 from vial_device import VialBootloader, VialKeyboard
@@ -138,7 +139,9 @@ class FirmwareFlasher(BasicEditor):
         self.btn_flash.setText(tr("Flasher", "Flash"))
         self.btn_flash.clicked.connect(self.on_click_flash)
         progress_flash.addWidget(self.btn_flash)
-        self.chk_restore_keymap = QCheckBox(tr("Flasher", "Restore current layout after flashing"))
+        self.chk_restore_keymap = QCheckBox(main)
+        self.chk_restore_keymap.hide()
+        self.chk_restore_keymap.setText(tr("Flasher", "Restore current layout after flashing"))
         self.chk_restore_keymap.setChecked(True)
         self.addWidget(self.chk_restore_keymap)
         self.addLayout(progress_flash)
@@ -162,8 +165,9 @@ class FirmwareFlasher(BasicEditor):
             self.chk_restore_keymap.show()
 
     def valid(self):
-        return isinstance(self.device, VialBootloader) or\
-               isinstance(self.device, VialKeyboard) and self.device.keyboard.vibl
+        return (isinstance(self.device, VialBootloader) or \
+               (isinstance(self.device, VialKeyboard) and self.device.keyboard.vibl)) \
+               and sys.platform != "emscripten"
 
     def find_device_with_uid(self, cls, uid):
         devices = find_vial_devices({"definitions": {}})

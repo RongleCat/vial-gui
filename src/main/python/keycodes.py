@@ -2,6 +2,9 @@
 
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import sys
+
+
 class Keycode:
 
     masked_keycodes = set()
@@ -14,6 +17,10 @@ class Keycode:
         self.qmk_id = qmk_id
         self.qmk_id_to_keycode[qmk_id] = self
         self.label = label
+        # we cannot embed full CJK fonts due to large size, workaround like this for now
+        if sys.platform == "emscripten" and not label.isascii() and qmk_id != "KC_TRNS":
+            self.label = qmk_id.replace("KC_", "")
+
         self.tooltip = tooltip
         # whether this keycode requires another sub-keycode
         self.masked = masked
@@ -36,10 +43,7 @@ class Keycode:
 
     @classmethod
     def find(cls, code):
-        for keycode in KEYCODES:
-            if keycode.code == code:
-                return keycode
-        return None
+        return KEYCODES_MAP.get(code)
 
     @classmethod
     def find_outer_keycode(cls, code):
@@ -116,6 +120,44 @@ KEYCODES_SPECIAL = [
     K(0x01, "KC_TRNS", "▽", alias=["KC_TRANSPARENT"]),
 ]
 
+KEYCODES_BASIC_NUMPAD = [
+    K(0x53, "KC_NUMLOCK", "Num\nLock", recorder_alias=["num lock"], alias=["KC_NLCK"]),
+    K(0x54, "KC_KP_SLASH", "/", alias=["KC_PSLS"]),
+    K(0x55, "KC_KP_ASTERISK", "*", alias=["KC_PAST"]),
+    K(0x56, "KC_KP_MINUS", "-", alias=["KC_PMNS"]),
+    K(0x57, "KC_KP_PLUS", "+", alias=["KC_PPLS"]),
+    K(0x58, "KC_KP_ENTER", "Num\nEnter", alias=["KC_PENT"]),
+    K(0x59, "KC_KP_1", "1", alias=["KC_P1"]),
+    K(0x5A, "KC_KP_2", "2", alias=["KC_P2"]),
+    K(0x5B, "KC_KP_3", "3", alias=["KC_P3"]),
+    K(0x5C, "KC_KP_4", "4", alias=["KC_P4"]),
+    K(0x5D, "KC_KP_5", "5", alias=["KC_P5"]),
+    K(0x5E, "KC_KP_6", "6", alias=["KC_P6"]),
+    K(0x5F, "KC_KP_7", "7", alias=["KC_P7"]),
+    K(0x60, "KC_KP_8", "8", alias=["KC_P8"]),
+    K(0x61, "KC_KP_9", "9", alias=["KC_P9"]),
+    K(0x62, "KC_KP_0", "0", alias=["KC_P0"]),
+    K(0x63, "KC_KP_DOT", ".", alias=["KC_PDOT"]),
+    K(0x67, "KC_KP_EQUAL", "=", alias=["KC_PEQL"]),
+    K(0x85, "KC_KP_COMMA", ",", alias=["KC_PCMM"]),
+]
+
+KEYCODES_BASIC_NAV = [
+    K(0x46, "KC_PSCREEN", "Print\nScreen", alias=["KC_PSCR"]),
+    K(0x47, "KC_SCROLLLOCK", "Scroll\nLock", recorder_alias=["scroll lock"], alias=["KC_SLCK", "KC_BRMD"]),
+    K(0x48, "KC_PAUSE", "Pause", recorder_alias=["pause", "break"], alias=["KC_PAUS", "KC_BRK", "KC_BRMU"]),
+    K(0x49, "KC_INSERT", "Insert", recorder_alias=["insert"], alias=["KC_INS"]),
+    K(0x4A, "KC_HOME", "Home", recorder_alias=["home"]),
+    K(0x4B, "KC_PGUP", "Page\nUp", recorder_alias=["page up"]),
+    K(0x4C, "KC_DELETE", "Del", recorder_alias=["delete"], alias=["KC_DEL"]),
+    K(0x4D, "KC_END", "End", recorder_alias=["end"]),
+    K(0x4E, "KC_PGDOWN", "Page\nDown", recorder_alias=["page down"], alias=["KC_PGDN"]),
+    K(0x4F, "KC_RIGHT", "Right", recorder_alias=["right"], alias=["KC_RGHT"]),
+    K(0x50, "KC_LEFT", "Left", recorder_alias=["left"]),
+    K(0x51, "KC_DOWN", "Down", recorder_alias=["down"]),
+    K(0x52, "KC_UP", "Up", recorder_alias=["up"]),
+]
+
 KEYCODES_BASIC = [
     K(0x04, "KC_A", "A", printable="a", recorder_alias=["a"]),
     K(0x05, "KC_B", "B", printable="b", recorder_alias=["b"]),
@@ -182,40 +224,8 @@ KEYCODES_BASIC = [
     K(0x43, "KC_F10", "F10", recorder_alias=["f10"]),
     K(0x44, "KC_F11", "F11", recorder_alias=["f11"]),
     K(0x45, "KC_F12", "F12", recorder_alias=["f12"]),
-    K(0x46, "KC_PSCREEN", "Print\nScreen", alias=["KC_PSCR"]),
-    K(0x47, "KC_SCROLLLOCK", "Scroll\nLock", recorder_alias=["scroll lock"], alias=["KC_SLCK", "KC_BRMD"]),
-    K(0x48, "KC_PAUSE", "Pause", recorder_alias=["pause", "break"], alias=["KC_PAUS", "KC_BRK", "KC_BRMU"]),
-    K(0x49, "KC_INSERT", "Insert", recorder_alias=["insert"], alias=["KC_INS"]),
-    K(0x4A, "KC_HOME", "Home", recorder_alias=["home"]),
-    K(0x4B, "KC_PGUP", "Page\nUp", recorder_alias=["page up"]),
-    K(0x4C, "KC_DELETE", "Del", recorder_alias=["delete"], alias=["KC_DEL"]),
-    K(0x4D, "KC_END", "End", recorder_alias=["end"]),
-    K(0x4E, "KC_PGDOWN", "Page\nDown", recorder_alias=["page down"], alias=["KC_PGDN"]),
-    K(0x4F, "KC_RIGHT", "Right", recorder_alias=["right"], alias=["KC_RGHT"]),
-    K(0x50, "KC_LEFT", "Left", recorder_alias=["left"]),
-    K(0x51, "KC_DOWN", "Down", recorder_alias=["down"]),
-    K(0x52, "KC_UP", "Up", recorder_alias=["up"]),
-    K(0x53, "KC_NUMLOCK", "Num\nLock", recorder_alias=["num lock"], alias=["KC_NLCK"]),
-    K(0x54, "KC_KP_SLASH", "/", alias=["KC_PSLS"]),
-    K(0x55, "KC_KP_ASTERISK", "*", alias=["KC_PAST"]),
-    K(0x56, "KC_KP_MINUS", "-", alias=["KC_PMNS"]),
-    K(0x57, "KC_KP_PLUS", "+", alias=["KC_PPLS"]),
-    K(0x58, "KC_KP_ENTER", "Num\nEnter", alias=["KC_PENT"]),
-    K(0x59, "KC_KP_1", "1", alias=["KC_P1"]),
-    K(0x5A, "KC_KP_2", "2", alias=["KC_P2"]),
-    K(0x5B, "KC_KP_3", "3", alias=["KC_P3"]),
-    K(0x5C, "KC_KP_4", "4", alias=["KC_P4"]),
-    K(0x5D, "KC_KP_5", "5", alias=["KC_P5"]),
-    K(0x5E, "KC_KP_6", "6", alias=["KC_P6"]),
-    K(0x5F, "KC_KP_7", "7", alias=["KC_P7"]),
-    K(0x60, "KC_KP_8", "8", alias=["KC_P8"]),
-    K(0x61, "KC_KP_9", "9", alias=["KC_P9"]),
-    K(0x62, "KC_KP_0", "0", alias=["KC_P0"]),
-    K(0x63, "KC_KP_DOT", ".", alias=["KC_PDOT"]),
-    K(0x65, "KC_APPLICATION", "Menu", recorder_alias=["menu", "left menu", "right menu"], alias=["KC_APP"]),
-    K(0x67, "KC_KP_EQUAL", "=", alias=["KC_PEQL"]),
-    K(0x85, "KC_KP_COMMA", ",", alias=["KC_PCMM"]),
 
+    K(0x65, "KC_APPLICATION", "Menu", recorder_alias=["menu", "left menu", "right menu"], alias=["KC_APP"]),
     K(0xE0, "KC_LCTRL", "LCtrl", recorder_alias=["left ctrl", "ctrl"], alias=["KC_LCTL"]),
     K(0xE1, "KC_LSHIFT", "LShift", recorder_alias=["left shift", "shift"], alias=["KC_LSFT"]),
     K(0xE2, "KC_LALT", "LAlt", recorder_alias=["alt"], alias=["KC_LOPT"]),
@@ -225,6 +235,9 @@ KEYCODES_BASIC = [
     K(0xE6, "KC_RALT", "RAlt", alias=["KC_ALGR", "KC_ROPT"]),
     K(0xE7, "KC_RGUI", "RGui", recorder_alias=["right windows"], alias=["KC_RCMD", "KC_RWIN"]),
 ]
+
+KEYCODES_BASIC.extend(KEYCODES_BASIC_NUMPAD)
+KEYCODES_BASIC.extend(KEYCODES_BASIC_NAV)
 
 KEYCODES_SHIFTED = [
     K(0x235, "KC_TILD", "~"),
@@ -258,9 +271,14 @@ KEYCODES_ISO = [
     K(0x89, "KC_JYEN", "|\n¥", alias=["KC_INT3"]),
     K(0x8A, "KC_HENK", "変換", "JIS Henkan", alias=["KC_INT4"]),
     K(0x8B, "KC_MHEN", "無変換", "JIS Muhenkan", alias=["KC_INT5"]),
+]
+
+KEYCODES_ISO_KR = [
     K(0x90, "KC_LANG1", "한영\nかな", "Korean Han/Yeong / JP Mac Kana", alias=["KC_HAEN"]),
     K(0x91, "KC_LANG2", "漢字\n英数", "Korean Hanja / JP Mac Eisu", alias=["KC_HANJ"]),
 ]
+
+KEYCODES_ISO.extend(KEYCODES_ISO_KR)
 
 KEYCODES_LAYERS = []
 
@@ -363,6 +381,8 @@ KEYCODES_QUANTUM = [
     K(MT(MOD_LGUI|MOD_LSFT), "SGUI_T(kc)", "SGUI_T\n(kc)", "LGUI + LSFT when held, kc when tapped", masked=True),
     K(MT(MOD_LCTL|MOD_LALT), "LCA_T(kc)", "LCA_T\n(kc)", "LCTL + LALT when held, kc when tapped", masked=True),
     K(MT(MOD_LSFT|MOD_LALT), "LSA_T(kc)", "LSA_T\n(kc)", "LSFT + LALT when held, kc when tapped", masked=True),
+    K(MT(MOD_LCTL|MOD_LGUI), "LCG_T(kc)", "LCG_T\n(kc)", "LCTL + LGUI when held, kc when tapped", masked=True),
+    K(MT(MOD_RCTL|MOD_RGUI), "RCG_T(kc)", "RCG_T\n(kc)", "RCTL + RGUI when held, kc when tapped", masked=True),
 
     K(QK_LCTL|QK_LSFT|QK_LALT|QK_LGUI, "HYPR(kc)", "Hyper\n(kc)", "LCTL + LSFT + LALT + LGUI", masked=True),
     K(QK_LCTL|QK_LSFT|QK_LALT, "MEH(kc)", "Meh\n(kc)", "LCTL + LSFT + LALT", masked=True),
@@ -371,6 +391,8 @@ KEYCODES_QUANTUM = [
     K(QK_LCTL|QK_LALT, "LCA(kc)", "LCA\n(kc)", "LCTL + LALT", masked=True),
     K(QK_LSFT|QK_LALT, "LSA(kc)", "LSA\n(kc)", "LSFT + LALT", masked=True),
     K(QK_LCTL|QK_LSFT, "C_S(kc)", "C_S\n(kc)", "LCTL + LSFT", masked=True),
+    K(QK_LCTL|QK_LGUI, "LCG(kc)", "LCG\n(kc)", "LCTL + LGUI", masked=True),
+    K(QK_RCTL|QK_RGUI, "RCG(kc)", "RCG\n(kc)", "RCTL + RGUI", masked=True),
 
     K(0x5C16, "KC_GESC", "~\nEsc", "Esc normally, but ~ when Shift or GUI is pressed"),
     K(0x5CD7, "KC_LSPO", "LS\n(", "Left Shift when held, ( when tapped"),
@@ -442,6 +464,17 @@ KEYCODES_QUANTUM = [
     K(0x5CF0, "HPT_COND", "Haptic\n-", "Decrease DRV2605L continous haptic strength"),
     K(0x5CF1, "HPT_DWLI", "Haptic\nDwell+", "Increase Solenoid dwell time"),
     K(0x5CF2, "HPT_DWLD", "Haptic\nDwell-", "Decrease Solenoid dwell time"),
+
+    K(0x5C18, "KC_ASDN", "Auto-\nshift\nDown", "Lower the Auto Shift timeout variable (down)"),
+    K(0x5C17, "KC_ASUP", "Auto-\nshift\nUp", "Raise the Auto Shift timeout variable (up)"),
+    K(0x5C19, "KC_ASRP", "Auto-\nshift\nReport", "Report your current Auto Shift timeout value"),
+    K(0x5C1B, "KC_ASON", "Auto-\nshift\nOn", "Turns on the Auto Shift Function"),
+    K(0x5C1C, "KC_ASOFF", "Auto-\nshift\nOff", "Turns off the Auto Shift Function"),
+    K(0x5C1A, "KC_ASTG", "Auto-\nshift\nToggle", "Toggles the state of the Auto Shift feature"),
+
+    K(0x5CF7, "CMB_ON", "Combo\nOn", "Turns on Combo feature"),
+    K(0x5CF8, "CMB_OFF", "Combo\nOff", "Turns off Combo feature"),
+    K(0x5CF9, "CMB_TOG", "Combo\nToggle", "Toggles Combo feature on and off"),
 ]
 
 KEYCODES_BACKLIGHT = [
@@ -558,6 +591,172 @@ KEYCODES_USER = []
 
 KEYCODES_MACRO = []
 
+KEYCODES_MACRO_BASE = [
+    K(0x5D03, "DYN_REC_START1", "DM1\nRec", "Dynamic Macro 1 Rec Start", alias=["DM_REC1"]),
+    K(0x5D04, "DYN_REC_START2", "DM2\nRec", "Dynamic Macro 2 Rec Start", alias=["DM_REC2"]),
+    K(0x5D05, "DYN_REC_STOP", "DM Rec\nStop", "Dynamic Macro Rec Stop", alias=["DM_RSTP"]),
+    K(0x5D06, "DYN_MACRO_PLAY1", "DM1\nPlay", "Dynamic Macro 1 Play", alias=["DM_PLY1"]),
+    K(0x5D07, "DYN_MACRO_PLAY2", "DM2\nPlay", "Dynamic Macro 2 Play", alias=["DM_PLY2"]),
+]
+
+KEYCODES_MIDI = []
+
+KEYCODES_MIDI_BASIC = [
+    K(0x5C2F, "MI_C", "ᴹᴵᴰᴵ\nC", "Midi send note C"),
+    K(0x5C30, "MI_Cs", "ᴹᴵᴰᴵ\nC#/Dᵇ", "Midi send note C#/Dᵇ", alias=["MI_Db"]),
+    K(0x5C31, "MI_D", "ᴹᴵᴰᴵ\nD", "Midi send note D"),
+    K(0x5C32, "MI_Ds", "ᴹᴵᴰᴵ\nD#/Eᵇ", "Midi send note D#/Eᵇ", alias=["MI_Eb"]),
+    K(0x5C33, "MI_E", "ᴹᴵᴰᴵ\nE", "Midi send note E"),
+    K(0x5C34, "MI_F", "ᴹᴵᴰᴵ\nF", "Midi send note F"),
+    K(0x5C35, "MI_Fs", "ᴹᴵᴰᴵ\nF#/Gᵇ", "Midi send note F#/Gᵇ", alias=["MI_Gb"]),
+    K(0x5C36, "MI_G", "ᴹᴵᴰᴵ\nG", "Midi send note G"),
+    K(0x5C37, "MI_Gs", "ᴹᴵᴰᴵ\nG#/Aᵇ", "Midi send note G#/Aᵇ", alias=["MI_Ab"]),
+    K(0x5C38, "MI_A", "ᴹᴵᴰᴵ\nA", "Midi send note A"),
+    K(0x5C39, "MI_As", "ᴹᴵᴰᴵ\nA#/Bᵇ", "Midi send note A#/Bᵇ", alias=["MI_Bb"]),
+    K(0x5C3A, "MI_B", "ᴹᴵᴰᴵ\nB", "Midi send note B"),
+
+    K(0x5C3B, "MI_C_1", "ᴹᴵᴰᴵ\nC₁", "Midi send note C₁"),
+    K(0x5C3C, "MI_Cs_1", "ᴹᴵᴰᴵ\nC#₁/Dᵇ₁", "Midi send note C#₁/Dᵇ₁", alias=["MI_Db_1"]),
+    K(0x5C3D, "MI_D_1", "ᴹᴵᴰᴵ\nD₁", "Midi send note D₁"),
+    K(0x5C3E, "MI_Ds_1", "ᴹᴵᴰᴵ\nD#₁/Eᵇ₁", "Midi send note D#₁/Eᵇ₁", alias=["MI_Eb_1"]),
+    K(0x5C3F, "MI_E_1", "ᴹᴵᴰᴵ\nE₁", "Midi send note E₁"),
+    K(0x5C40, "MI_F_1", "ᴹᴵᴰᴵ\nF₁", "Midi send note F₁"),
+    K(0x5C41, "MI_Fs_1", "ᴹᴵᴰᴵ\nF#₁/Gᵇ₁", "Midi send note F#₁/Gᵇ₁", alias=["MI_Gb_1"]),
+    K(0x5C42, "MI_G_1", "ᴹᴵᴰᴵ\nG₁", "Midi send note G₁"),
+    K(0x5C43, "MI_Gs_1", "ᴹᴵᴰᴵ\nG#₁/Aᵇ₁", "Midi send note G#₁/Aᵇ₁", alias=["MI_Ab_1"]),
+    K(0x5C44, "MI_A_1", "ᴹᴵᴰᴵ\nA₁", "Midi send note A₁"),
+    K(0x5C45, "MI_As_1", "ᴹᴵᴰᴵ\nA#₁/Bᵇ₁", "Midi send note A#₁/Bᵇ₁", alias=["MI_Bb_1"]),
+    K(0x5C46, "MI_B_1", "ᴹᴵᴰᴵ\nB₁", "Midi send note B₁"),
+
+    K(0x5C47, "MI_C_2", "ᴹᴵᴰᴵ\nC₂", "Midi send note C₂"),
+    K(0x5C48, "MI_Cs_2", "ᴹᴵᴰᴵ\nC#₂/Dᵇ₂", "Midi send note C#₂/Dᵇ₂", alias=["MI_Db_2"]),
+    K(0x5C49, "MI_D_2", "ᴹᴵᴰᴵ\nD₂", "Midi send note D₂"),
+    K(0x5C4A, "MI_Ds_2", "ᴹᴵᴰᴵ\nD#₂/Eᵇ₂", "Midi send note D#₂/Eᵇ₂", alias=["MI_Eb_2"]),
+    K(0x5C4B, "MI_E_2", "ᴹᴵᴰᴵ\nE₂", "Midi send note E₂"),
+    K(0x5C4C, "MI_F_2", "ᴹᴵᴰᴵ\nF₂", "Midi send note F₂"),
+    K(0x5C4D, "MI_Fs_2", "ᴹᴵᴰᴵ\nF#₂/Gᵇ₂", "Midi send note F#₂/Gᵇ₂", alias=["MI_Gb_2"]),
+    K(0x5C4E, "MI_G_2", "ᴹᴵᴰᴵ\nG₂", "Midi send note G₂"),
+    K(0x5C4F, "MI_Gs_2", "ᴹᴵᴰᴵ\nG#₂/Aᵇ₂", "Midi send note G#₂/Aᵇ₂", alias=["MI_Ab_2"]),
+    K(0x5C50, "MI_A_2", "ᴹᴵᴰᴵ\nA₂", "Midi send note A₂"),
+    K(0x5C51, "MI_As_2", "ᴹᴵᴰᴵ\nA#₂/Bᵇ₂", "Midi send note A#₂/Bᵇ₂", alias=["MI_Bb_2"]),
+    K(0x5C52, "MI_B_2", "ᴹᴵᴰᴵ\nB₂", "Midi send note B₂"),
+
+    K(0x5C53, "MI_C_3", "ᴹᴵᴰᴵ\nC₃", "Midi send note C₃"),
+    K(0x5C54, "MI_Cs_3", "ᴹᴵᴰᴵ\nC#₃/Dᵇ₃", "Midi send note C#₃/Dᵇ₃", alias=["MI_Db_3"]),
+    K(0x5C55, "MI_D_3", "ᴹᴵᴰᴵ\nD₃", "Midi send note D₃"),
+    K(0x5C56, "MI_Ds_3", "ᴹᴵᴰᴵ\nD#₃/Eᵇ₃", "Midi send note D#₃/Eᵇ₃", alias=["MI_Eb_3"]),
+    K(0x5C57, "MI_E_3", "ᴹᴵᴰᴵ\nE₃", "Midi send note E₃"),
+    K(0x5C58, "MI_F_3", "ᴹᴵᴰᴵ\nF₃", "Midi send note F₃"),
+    K(0x5C59, "MI_Fs_3", "ᴹᴵᴰᴵ\nF#₃/Gᵇ₃", "Midi send note F#₃/Gᵇ₃", alias=["MI_Gb_3"]),
+    K(0x5C5A, "MI_G_3", "ᴹᴵᴰᴵ\nG₃", "Midi send note G₃"),
+    K(0x5C5B, "MI_Gs_3", "ᴹᴵᴰᴵ\nG#₃/Aᵇ₃", "Midi send note G#₃/Aᵇ₃", alias=["MI_Ab_3"]),
+    K(0x5C5C, "MI_A_3", "ᴹᴵᴰᴵ\nA₃", "Midi send note A₃"),
+    K(0x5C5D, "MI_As_3", "ᴹᴵᴰᴵ\nA#₃/Bᵇ₃", "Midi send note A#₃/Bᵇ₃", alias=["MI_Bb_3"]),
+    K(0x5C5E, "MI_B_3", "ᴹᴵᴰᴵ\nB₃", "Midi send note B₃"),
+
+    K(0x5C5F, "MI_C_4", "ᴹᴵᴰᴵ\nC₄", "Midi send note C₄"),
+    K(0x5C60, "MI_Cs_4", "ᴹᴵᴰᴵ\nC#₄/Dᵇ₄", "Midi send note C#₄/Dᵇ₄", alias=["MI_Db_4"]),
+    K(0x5C61, "MI_D_4", "ᴹᴵᴰᴵ\nD₄", "Midi send note D₄"),
+    K(0x5C62, "MI_Ds_4", "ᴹᴵᴰᴵ\nD#₄/Eᵇ₄", "Midi send note D#₄/Eᵇ₄", alias=["MI_Eb_4"]),
+    K(0x5C63, "MI_E_4", "ᴹᴵᴰᴵ\nE₄", "Midi send note E₄"),
+    K(0x5C64, "MI_F_4", "ᴹᴵᴰᴵ\nF₄", "Midi send note F₄"),
+    K(0x5C65, "MI_Fs_4", "ᴹᴵᴰᴵ\nF#₄/Gᵇ₄", "Midi send note F#₄/Gᵇ₄", alias=["MI_Gb_4"]),
+    K(0x5C66, "MI_G_4", "ᴹᴵᴰᴵ\nG₄", "Midi send note G₄"),
+    K(0x5C67, "MI_Gs_4", "ᴹᴵᴰᴵ\nG#₄/Aᵇ₄", "Midi send note G#₄/Aᵇ₄", alias=["MI_Ab_4"]),
+    K(0x5C68, "MI_A_4", "ᴹᴵᴰᴵ\nA₄", "Midi send note A₄"),
+    K(0x5C69, "MI_As_4", "ᴹᴵᴰᴵ\nA#₄/Bᵇ₄", "Midi send note A#₄/Bᵇ₄", alias=["MI_Bb_4"]),
+    K(0x5C6A, "MI_B_4", "ᴹᴵᴰᴵ\nB₄", "Midi send note B₄"),
+
+    K(0x5C6B, "MI_C_5", "ᴹᴵᴰᴵ\nC₅", "Midi send note C₅"),
+    K(0x5C6C, "MI_Cs_5", "ᴹᴵᴰᴵ\nC#₅/Dᵇ₅", "Midi send note C#₅/Dᵇ₅", alias=["MI_Db_5"]),
+    K(0x5C6D, "MI_D_5", "ᴹᴵᴰᴵ\nD₅", "Midi send note D₅"),
+    K(0x5C6E, "MI_Ds_5", "ᴹᴵᴰᴵ\nD#₅/Eᵇ₅", "Midi send note D#₅/Eᵇ₅", alias=["MI_Eb_5"]),
+    K(0x5C6F, "MI_E_5", "ᴹᴵᴰᴵ\nE₅", "Midi send note E₅"),
+    K(0x5C70, "MI_F_5", "ᴹᴵᴰᴵ\nF₅", "Midi send note F₅"),
+    K(0x5C71, "MI_Fs_5", "ᴹᴵᴰᴵ\nF#₅/Gᵇ₅", "Midi send note F#₅/Gᵇ₅", alias=["MI_Gb_5"]),
+    K(0x5C72, "MI_G_5", "ᴹᴵᴰᴵ\nG₅", "Midi send note G₅"),
+    K(0x5C73, "MI_Gs_5", "ᴹᴵᴰᴵ\nG#₅/Aᵇ₅", "Midi send note G#₅/Aᵇ₅", alias=["MI_Ab_5"]),
+    K(0x5C74, "MI_A_5", "ᴹᴵᴰᴵ\nA₅", "Midi send note A₅"),
+    K(0x5C75, "MI_As_5", "ᴹᴵᴰᴵ\nA#₅/Bᵇ₅", "Midi send note A#₅/Bᵇ₅", alias=["MI_Bb_5"]),
+    K(0x5C76, "MI_B_5", "ᴹᴵᴰᴵ\nB₅", "Midi send note B₅"),
+
+    K(0x5CB0, "MI_ALLOFF", "ᴹᴵᴰᴵ\nNotesᵒᶠᶠ", "Midi send all notes OFF"),
+]
+
+KEYCODES_MIDI_ADVANCED = [
+    K(0x5C77, "MI_OCT_N2", "ᴹᴵᴰᴵ\nOct₋₂", "Midi set octave to -2"),
+    K(0x5C78, "MI_OCT_N1", "ᴹᴵᴰᴵ\nOct₋₁", "Midi set octave to -1"),
+    K(0x5C79, "MI_OCT_0", "ᴹᴵᴰᴵ\nOct₀", "Midi set octave to 0"),
+    K(0x5C7A, "MI_OCT_1", "ᴹᴵᴰᴵ\nOct₊₁", "Midi set octave to 1"),
+    K(0x5C7B, "MI_OCT_2", "ᴹᴵᴰᴵ\nOct₊₂", "Midi set octave to 2"),
+    K(0x5C7C, "MI_OCT_3", "ᴹᴵᴰᴵ\nOct₊₃", "Midi set octave to 3"),
+    K(0x5C7D, "MI_OCT_4", "ᴹᴵᴰᴵ\nOct₊₄", "Midi set octave to 4"),
+    K(0x5C7E, "MI_OCT_5", "ᴹᴵᴰᴵ\nOct₊₅", "Midi set octave to 5"),
+    K(0x5C7F, "MI_OCT_6", "ᴹᴵᴰᴵ\nOct₊₆", "Midi set octave to 6"),
+    K(0x5C80, "MI_OCT_7", "ᴹᴵᴰᴵ\nOct₊₇", "Midi set octave to 7"),
+    K(0x5C81, "MI_OCTD", "ᴹᴵᴰᴵ\nOctᴰᴺ", "Midi move down an octave"),
+    K(0x5C82, "MI_OCTU", "ᴹᴵᴰᴵ\nOctᵁᴾ", "Midi move up an octave"),
+
+    K(0x5C83, "MI_TRNS_N6", "ᴹᴵᴰᴵ\nTrans₋₆", "Midi set transposition to -4 semitones"),
+    K(0x5C84, "MI_TRNS_N5", "ᴹᴵᴰᴵ\nTrans₋₅", "Midi set transposition to -5 semitones"),
+    K(0x5C85, "MI_TRNS_N4", "ᴹᴵᴰᴵ\nTrans₋₄", "Midi set transposition to -4 semitones"),
+    K(0x5C86, "MI_TRNS_N3", "ᴹᴵᴰᴵ\nTrans₋₃", "Midi set transposition to -3 semitones"),
+    K(0x5C87, "MI_TRNS_N2", "ᴹᴵᴰᴵ\nTrans₋₂", "Midi set transposition to -2 semitones"),
+    K(0x5C88, "MI_TRNS_N1", "ᴹᴵᴰᴵ\nTrans₋₁", "Midi set transposition to -1 semitones"),
+    K(0x5C89, "MI_TRNS_0", "ᴹᴵᴰᴵ\nTrans₀", "Midi set no transposition"),
+    K(0x5C8A, "MI_TRNS_1", "ᴹᴵᴰᴵ\nTrans₊₁", "Midi set transposition to +1 semitones"),
+    K(0x5C8B, "MI_TRNS_2", "ᴹᴵᴰᴵ\nTrans₊₂", "Midi set transposition to +2 semitones"),
+    K(0x5C8C, "MI_TRNS_3", "ᴹᴵᴰᴵ\nTrans₊₃", "Midi set transposition to +3 semitones"),
+    K(0x5C8D, "MI_TRNS_4", "ᴹᴵᴰᴵ\nTrans₊₄", "Midi set transposition to +4 semitones"),
+    K(0x5C8E, "MI_TRNS_5", "ᴹᴵᴰᴵ\nTrans₊₅", "Midi set transposition to +5 semitones"),
+    K(0x5C8F, "MI_TRNS_6", "ᴹᴵᴰᴵ\nTrans₊₆", "Midi set transposition to +6 semitones"),
+    K(0x5C90, "MI_TRNSD", "ᴹᴵᴰᴵ\nTransᴰᴺ", "Midi decrease transposition"),
+    K(0x5C91, "MI_TRNSU", "ᴹᴵᴰᴵ\nTransᵁᴾ", "Midi increase transposition"),
+
+    K(0x5C92, "MI_VEL_1", "ᴹᴵᴰᴵ\nVel₁", "Midi set velocity to 0", alias=["MI_VEL_0"]),
+    K(0x5C93, "MI_VEL_2", "ᴹᴵᴰᴵ\nVel₂", "Midi set velocity to 25"),
+    K(0x5C94, "MI_VEL_3", "ᴹᴵᴰᴵ\nVel₃", "Midi set velocity to 38"),
+    K(0x5C95, "MI_VEL_4", "ᴹᴵᴰᴵ\nVel₄", "Midi set velocity to 51"),
+    K(0x5C96, "MI_VEL_5", "ᴹᴵᴰᴵ\nVel₅", "Midi set velocity to 64"),
+    K(0x5C97, "MI_VEL_6", "ᴹᴵᴰᴵ\nVel₆", "Midi set velocity to 76"),
+    K(0x5C98, "MI_VEL_7", "ᴹᴵᴰᴵ\nVel₇", "Midi set velocity to 89"),
+    K(0x5C99, "MI_VEL_8", "ᴹᴵᴰᴵ\nVel₈", "Midi set velocity to 102"),
+    K(0x5C9A, "MI_VEL_9", "ᴹᴵᴰᴵ\nVel₉", "Midi set velocity to 114"),
+    K(0x5C9B, "MI_VEL_10", "ᴹᴵᴰᴵ\nVel₁₀", "Midi set velocity to 127"),
+    K(0x5C9C, "MI_VELD", "ᴹᴵᴰᴵ\nVelᴰᴺ", "Midi decrease velocity"),
+    K(0x5C9D, "MI_VELU", "ᴹᴵᴰᴵ\nVelᵁᴾ", "Midi increase velocity"),
+
+    K(0x5C9E, "MI_CH1", "ᴹᴵᴰᴵ\nCH₁", "Midi set channel to 1"),
+    K(0x5C9F, "MI_CH2", "ᴹᴵᴰᴵ\nCH₂", "Midi set channel to 2"),
+    K(0x5CA0, "MI_CH3", "ᴹᴵᴰᴵ\nCH₃", "Midi set channel to 3"),
+    K(0x5CA1, "MI_CH4", "ᴹᴵᴰᴵ\nCH₄", "Midi set channel to 4"),
+    K(0x5CA2, "MI_CH5", "ᴹᴵᴰᴵ\nCH₅", "Midi set channel to 5"),
+    K(0x5CA3, "MI_CH6", "ᴹᴵᴰᴵ\nCH₆", "Midi set channel to 6"),
+    K(0x5CA4, "MI_CH7", "ᴹᴵᴰᴵ\nCH₇", "Midi set channel to 7"),
+    K(0x5CA5, "MI_CH8", "ᴹᴵᴰᴵ\nCH₈", "Midi set channel to 8"),
+    K(0x5CA6, "MI_CH9", "ᴹᴵᴰᴵ\nCH₉", "Midi set channel to 9"),
+    K(0x5CA7, "MI_CH10", "ᴹᴵᴰᴵ\nCH₁₀", "Midi set channel to 10"),
+    K(0x5CA8, "MI_CH11", "ᴹᴵᴰᴵ\nCH₁₁", "Midi set channel to 11"),
+    K(0x5CA9, "MI_CH12", "ᴹᴵᴰᴵ\nCH₁₂", "Midi set channel to 12"),
+    K(0x5CAA, "MI_CH13", "ᴹᴵᴰᴵ\nCH₁₃", "Midi set channel to 13"),
+    K(0x5CAB, "MI_CH14", "ᴹᴵᴰᴵ\nCH₁₄", "Midi set channel to 14"),
+    K(0x5CAC, "MI_CH15", "ᴹᴵᴰᴵ\nCH₁₅", "Midi set channel to 15"),
+    K(0x5CAD, "MI_CH16", "ᴹᴵᴰᴵ\nCH₁₆", "Midi set channel to 16"),
+    K(0x5CAE, "MI_CHD", "ᴹᴵᴰᴵ\nCHᴰᴺ", "Midi decrease channel"),
+    K(0x5CAF, "MI_CHU", "ᴹᴵᴰᴵ\nCHᵁᴾ", "Midi increase channel"),
+
+    K(0x5CB1, "MI_SUS", "ᴹᴵᴰᴵ\nSust", "Midi Sustain"),
+    K(0x5CB2, "MI_PORT", "ᴹᴵᴰᴵ\nPort", "Midi Portmento"),
+    K(0x5CB3, "MI_SOST", "ᴹᴵᴰᴵ\nSost", "Midi Sostenuto"),
+    K(0x5CB4, "MI_SOFT", "ᴹᴵᴰᴵ\nSPedal", "Midi Soft Pedal"),
+    K(0x5CB5, "MI_LEG", "ᴹᴵᴰᴵ\nLegat", "Midi Legato"),
+    K(0x5CB6, "MI_MOD", "ᴹᴵᴰᴵ\nModul", "Midi Modulation"),
+    K(0x5CB7, "MI_MODSD", "ᴹᴵᴰᴵ\nModulᴰᴺ", "Midi decrease modulation speed"),
+    K(0x5CB8, "MI_MODSU", "ᴹᴵᴰᴵ\nModulᵁᴾ", "Midi increase modulation speed"),
+    K(0x5CB9, "MI_BENDD", "ᴹᴵᴰᴵ\nBendᴰᴺ", "Midi bend pitch down"),
+    K(0x5CBA, "MI_BENDU", "ᴹᴵᴰᴵ\nBendᵁᴾ", "Midi bend pitch up"),
+]
+
 KEYCODES_HIDDEN = []
 for x in range(256):
     from any_keycode import QK_TAP_DANCE
@@ -565,6 +764,7 @@ for x in range(256):
     KEYCODES_HIDDEN.append(K(QK_TAP_DANCE | x, "TD({})".format(x), "TD({})".format(x)))
 
 KEYCODES = []
+KEYCODES_MAP = dict()
 
 K = None
 
@@ -575,7 +775,10 @@ def recreate_keycodes():
     KEYCODES.clear()
     KEYCODES.extend(KEYCODES_SPECIAL + KEYCODES_BASIC + KEYCODES_SHIFTED + KEYCODES_ISO + KEYCODES_LAYERS +
                     KEYCODES_QUANTUM + KEYCODES_BACKLIGHT + KEYCODES_MEDIA + KEYCODES_TAP_DANCE + KEYCODES_MACRO +
-                    KEYCODES_USER + KEYCODES_HIDDEN)
+                    KEYCODES_USER + KEYCODES_HIDDEN + KEYCODES_MIDI)
+    KEYCODES_MAP.clear()
+    for keycode in KEYCODES:
+        KEYCODES_MAP[keycode.code] = keycode
 
 
 def create_user_keycodes():
@@ -604,16 +807,26 @@ def create_custom_user_keycodes(custom_keycodes):
         )
 
 
+def create_midi_keycodes(midiSettingLevel):
+    KEYCODES_MIDI.clear()
+
+    if midiSettingLevel == "basic" or midiSettingLevel == "advanced":
+        KEYCODES_MIDI.extend(KEYCODES_MIDI_BASIC)
+
+    if midiSettingLevel == "advanced":
+        KEYCODES_MIDI.extend(KEYCODES_MIDI_ADVANCED)
+
+
 def recreate_keyboard_keycodes(keyboard):
     """ Generates keycodes based on information the keyboard provides (e.g. layer keycodes, macros) """
 
     layers = keyboard.layers
 
-    def generate_keycodes_for_mask(label, mask):
+    def generate_keycodes_for_mask(label, mask, description):
         keycodes = []
         for layer in range(layers):
             lbl = "{}({})".format(label, layer)
-            keycodes.append(Keycode(mask | layer, lbl, lbl))
+            keycodes.append(Keycode(mask | layer, lbl, lbl, description))
         return keycodes
 
     KEYCODES_LAYERS.clear()
@@ -622,12 +835,24 @@ def recreate_keyboard_keycodes(keyboard):
         KEYCODES_LAYERS.append(Keycode(0x5F10, "FN_MO13", "Fn1\n(Fn3)"))
         KEYCODES_LAYERS.append(Keycode(0x5F11, "FN_MO23", "Fn2\n(Fn3)"))
 
-    KEYCODES_LAYERS.extend(generate_keycodes_for_mask("MO", 0x5100))
-    KEYCODES_LAYERS.extend(generate_keycodes_for_mask("DF", 0x5200))
-    KEYCODES_LAYERS.extend(generate_keycodes_for_mask("TG", 0x5300))
-    KEYCODES_LAYERS.extend(generate_keycodes_for_mask("TT", 0x5800))
-    KEYCODES_LAYERS.extend(generate_keycodes_for_mask("OSL", 0x5400))
-    KEYCODES_LAYERS.extend(generate_keycodes_for_mask("TO", 0x5000 | (1 << 4)))
+    KEYCODES_LAYERS.extend(
+        generate_keycodes_for_mask("MO", 0x5100,
+                                   "Momentarily turn on layer when pressed (requires KC_TRNS on destination layer)"))
+    KEYCODES_LAYERS.extend(
+        generate_keycodes_for_mask("DF", 0x5200,
+                                   "Set the base (default) layer"))
+    KEYCODES_LAYERS.extend(
+        generate_keycodes_for_mask("TG", 0x5300,
+                                   "Toggle layer on or off"))
+    KEYCODES_LAYERS.extend(
+        generate_keycodes_for_mask("TT", 0x5800,
+                                   "Normally acts like MO unless it's tapped multiple times, which toggles layer on"))
+    KEYCODES_LAYERS.extend(
+        generate_keycodes_for_mask("OSL", 0x5400,
+                                   "Momentarily activates layer until a key is pressed"))
+    KEYCODES_LAYERS.extend(
+        generate_keycodes_for_mask("TO", 0x5000 | (1 << 4),
+                                   "Turns on layer and turns off all other layers, except the default layer"))
 
     for x in range(layers):
         KEYCODES_LAYERS.append(Keycode(LT(x), "LT({}, kc)".format(x), "LT {}\n(kc)".format(x),
@@ -638,16 +863,21 @@ def recreate_keyboard_keycodes(keyboard):
         lbl = "M{}".format(x)
         KEYCODES_MACRO.append(Keycode(0x5F12 + x, lbl, lbl))
 
+    for x, kc in enumerate(KEYCODES_MACRO_BASE):
+        KEYCODES_MACRO.append(kc)
+
     KEYCODES_TAP_DANCE.clear()
     for x in range(keyboard.tap_dance_count):
         lbl = "TD({})".format(x)
-        KEYCODES_TAP_DANCE.append(Keycode(QK_TAP_DANCE | x, lbl, lbl))
+        KEYCODES_TAP_DANCE.append(Keycode(QK_TAP_DANCE | x, lbl, lbl, "Tap dance keycode"))
 
     # Check if custom keycodes are defined in keyboard, and if so add them to user keycodes
     if keyboard.custom_keycodes is not None and len(keyboard.custom_keycodes) > 0:
         create_custom_user_keycodes(keyboard.custom_keycodes)
     else:
         create_user_keycodes()
+
+    create_midi_keycodes(keyboard.midi)
 
     recreate_keycodes()
 

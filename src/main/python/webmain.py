@@ -1,18 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-import ssl
-import certifi
 import os
-
-if ssl.get_default_verify_paths().cafile is None:
-    os.environ['SSL_CERT_FILE'] = certifi.where()
 
 import traceback
 
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
+import json
 
 from main_window import MainWindow
 
@@ -23,9 +18,12 @@ from util import init_logger
 
 def show_exception_box(log_msg):
     if QtWidgets.QApplication.instance() is not None:
+        global errorbox
+
         errorbox = QtWidgets.QMessageBox()
         errorbox.setText(log_msg)
-        errorbox.exec_()
+        errorbox.setModal(True)
+        errorbox.show()
 
 
 class UncaughtHook(QtCore.QObject):
@@ -54,16 +52,19 @@ class UncaughtHook(QtCore.QObject):
         sys._excepthook(exc_type, exc_value, exc_traceback)
 
 
-if __name__ == '__main__':
-    if len(sys.argv) == 2 and sys.argv[1] == "--linux-recorder":
-        from linux_keystroke_recorder import linux_keystroke_recorder
+def web_get_resource(name):
+    return "/usr/local/" + name
 
-        linux_keystroke_recorder()
-    else:
-        appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
-        init_logger()
-        qt_exception_hook = UncaughtHook()
-        window = MainWindow(appctxt)
-        window.show()
-        exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
-        sys.exit(exit_code)
+
+def main(app):
+    font = app.font()
+    font.setPointSize(10)
+    app.setFont(font)
+
+    app.get_resource = web_get_resource
+    with open(app.get_resource("build_settings.json"), "r") as inf:
+        app.build_settings = json.loads(inf.read())
+    qt_exception_hook = UncaughtHook()
+    window = MainWindow(app)
+    window.show()
+    app.processEvents()

@@ -7,7 +7,8 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QVBoxLayout, QCheckBox, QGridLayout, QLabel, QWidget, QSizePolicy, QTabWidget, QSpinBox, \
     QHBoxLayout, QPushButton, QMessageBox
 
-from basic_editor import BasicEditor
+from editor.basic_editor import BasicEditor
+from protocol.constants import VIAL_PROTOCOL_QMK_SETTINGS
 from util import tr
 from vial_device import VialKeyboard
 
@@ -228,7 +229,7 @@ class QmkSettings(BasicEditor):
 
     def valid(self):
         return isinstance(self.device, VialKeyboard) and \
-               (self.device.keyboard and self.device.keyboard.vial_protocol >= 4
+               (self.device.keyboard and self.device.keyboard.vial_protocol >= VIAL_PROTOCOL_QMK_SETTINGS
                 and len(self.device.keyboard.supported_settings))
 
     @classmethod
@@ -251,7 +252,7 @@ class QmkSettings(BasicEditor):
         fields = cls.qsid_fields[qsid]
         if fields[0]["type"] == "boolean":
             assert isinstance(data, int)
-            return data.to_bytes(1, byteorder="little")
+            return data.to_bytes(fields[0].get("width", 1), byteorder="little")
         elif fields[0]["type"] == "integer":
             assert isinstance(data, int)
             assert len(fields) == 1
@@ -262,7 +263,7 @@ class QmkSettings(BasicEditor):
         """ Deserialize from binary received from firmware into internal representation """
         fields = cls.qsid_fields[qsid]
         if fields[0]["type"] == "boolean":
-            return data[0]
+            return int.from_bytes(data[0:fields[0].get("width", 1)], byteorder="little")
         elif fields[0]["type"] == "integer":
             assert len(fields) == 1
             return int.from_bytes(data[0:fields[0]["width"]], byteorder="little")
